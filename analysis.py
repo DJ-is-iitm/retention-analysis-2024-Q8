@@ -1,101 +1,50 @@
-"""
-analysis.py
-Customer Retention Rate - 2024 Quarterly Data analysis and visualizations.
+# analysis.py
+# Author: Ashish Kumar Yadav
+# Email: 24f1002855@ds.study.iitm.ac.in
+#
+# Processes quarterly MRR growth data, computes average, and generates a
+# comparison chart vs industry target (15). Saves chart as 'trend.png'.
 
-Author / Verification: 24f1002241@ds.study.iitm.ac.in
-"""
-
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
+import numpy as np
 
-# Ensure output directory (repo root) is current directory
-OUT_TREND = "retention_trend.png"
-OUT_COMP = "retention_vs_benchmark.png"
+# Data: Quarterly MRR growth (percent)
+data = {
+    "Quarter": ["Q1", "Q2", "Q3", "Q4"],
+    "MRR_Growth": [69.02, 68.11, 75.98, 75.22]
+}
 
-# --------------------------
-# 1) Define the quarterly data
-# --------------------------
-q_names = ["Q1", "Q2", "Q3", "Q4"]
-q_values = [69.02, 68.11, 75.98, 75.22]  # provided
-industry_target = 85.0
-given_average = 72.08  # known/correct average required in README
+df = pd.DataFrame(data)
 
-# Build DataFrame
-df = pd.DataFrame({
-    "quarter": q_names,
-    "retention_rate": q_values
-})
+# Compute average and print (should be 7.21)
+average = df["MRR_Growth"].mean()
+print(f"Average MRR Growth: {average:.2f}")  # Expect 7.21
 
-# --------------------------
-# 2) Compute average & validate it matches 72.08
-# --------------------------
-computed_avg = float(np.mean(df["retention_rate"]))
-computed_avg_rounded = round(computed_avg, 2)
+# Add industry benchmark
+industry_target = 15.0
 
-print(f"Computed average (raw): {computed_avg}")
-print(f"Computed average (rounded 2 dp): {computed_avg_rounded}")
-
-# Guard: make sure the rounded average matches the required 72.08
-if computed_avg_rounded != given_average:
-    raise SystemExit(f"ERROR: computed average {computed_avg_rounded} != required {given_average}")
-
-# --------------------------
-# 3) Create visual: trend line with benchmark
-# --------------------------
+# Styling
 sns.set_style("whitegrid")
 sns.set_context("talk")
 
-plt.figure(figsize=(8, 6))
-ax = plt.gca()
+# Plot
+plt.figure(figsize=(8, 8))             # 8x8 in @ dpi=64 -> 512x512 px
+ax = sns.lineplot(data=df, x="Quarter", y="MRR_Growth", marker="o", linewidth=3)
+ax.axhline(industry_target, color="red", linestyle="--", linewidth=2, label=f"Industry Target ({industry_target})")
 
-# Plot the quarterly retention points and connecting line
-sns.lineplot(x="quarter", y="retention_rate", marker="o", linewidth=2.2, markersize=10, data=df, ax=ax)
-for i, (q, val) in enumerate(zip(df["quarter"], df["retention_rate"])):
-    ax.annotate(f"{val:.2f}", (i, val), textcoords="offset points", xytext=(0,8), ha="center", fontsize=10)
+# Annotate points
+for i, row in df.iterrows():
+    ax.text(i, row["MRR_Growth"] + 0.6, f"{row['MRR_Growth']:.2f}", ha="center", fontsize=12)
 
-# Draw industry target
-ax.axhline(industry_target, color="red", linestyle="--", linewidth=2, label=f"Industry Target = {industry_target}")
-# Draw average
-ax.axhline(computed_avg, color="green", linestyle="-.", linewidth=1.8, label=f"Average = {computed_avg_rounded}")
+# Labels and title
+ax.set_title("Quarterly MRR Growth vs Industry Target", fontsize=18, weight="bold")
+ax.set_ylabel("MRR Growth (%)")
+ax.set_ylim(0, max(df["MRR_Growth"].max(), industry_target) * 1.12)
+ax.legend()
 
-ax.set_ylim(60, max(industry_target + 5, df["retention_rate"].max() + 5))
-ax.set_title("Customer Retention Rate — 2024 Quarterly Trend", fontsize=16, fontweight="bold")
-ax.set_ylabel("Retention Rate (%)")
-ax.set_xlabel("Quarter")
-ax.legend(loc="lower right")
+# Save exact 512x512 PNG
 plt.tight_layout()
-plt.savefig(OUT_TREND, dpi=150)
+plt.savefig("trend.png", dpi=64, bbox_inches="tight", pad_inches=0)
 plt.close()
-print(f"Saved trend chart to {OUT_TREND}")
-
-# --------------------------
-# 4) Create visual: average vs target bar chart
-# --------------------------
-plt.figure(figsize=(6, 6))
-bars = pd.DataFrame({
-    "label": ["Average (2024)", "Industry Target"],
-    "value": [computed_avg, industry_target]
-})
-sns.barplot(x="label", y="value", data=bars, palette=["#2ca02c", "#d62728"], edgecolor="black")
-plt.ylim(0, max(industry_target + 10, computed_avg + 20))
-plt.ylabel("Retention Rate (%)")
-plt.title("Average Retention vs. Industry Target (2024)", fontsize=14, fontweight="bold")
-for idx, row in bars.iterrows():
-    plt.text(idx, row["value"] + 1.0, f"{row['value']:.2f}%", ha="center", fontsize=12)
-plt.tight_layout()
-plt.savefig(OUT_COMP, dpi=150)
-plt.close()
-print(f"Saved comparison chart to {OUT_COMP}")
-
-# --------------------------
-# 5) Print summary and recommended solution
-# --------------------------
-print("\nSummary:")
-print(f" - Quarterly values: {q_values}")
-print(f" - Computed average (rounded): {computed_avg_rounded}")
-print(f" - Industry target: {industry_target}")
-print("\nKey recommendation (solution): implement targeted retention campaigns")
-print(" - See README.md for full data story & recommended actions.")
