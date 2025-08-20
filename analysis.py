@@ -1,6 +1,6 @@
 # analysis.py
-# Author: Ashish Kumar Yadav
-# Email: 24f1002855@ds.study.iitm.ac.in
+# Author: Devyansh Jain
+# Email: 24f1002241@ds.study.iitm.ac.in
 #
 # Processes quarterly MRR growth data, computes average, and generates a
 # comparison chart vs industry target (15). Saves chart as 'trend.png'.
