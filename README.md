@@ -1,6 +1,7 @@
-# Customer Retention Rate — 2024 Quarterly Analysis
+# Quarterly MRR Growth Analysis (2024)
 
-**Contact / Verification:** 24f1002241@ds.study.iitm.ac.in
+**Author:** Devyansh Jain  
+**Email:** 24f1002241@ds.study.iitm.ac.in
 
 ## Data (Customer Retention Rate - 2024 Quarterly)
 - Q1: 69.02  
